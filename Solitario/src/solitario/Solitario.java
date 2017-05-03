@@ -19,7 +19,7 @@ public class Solitario extends Applet{
 	Baraja baraja;
 	Image imgReverso;
 	Rectangle reverso;
-	List<Carta> cartasExtraidas;
+	MazoSecundario mazoB;
 	Carta activa;
 	
 	public void init() {
@@ -32,16 +32,15 @@ public class Solitario extends Applet{
 				imagenes[(i*CPP)+j]= getImage(getCodeBase(),"cartas/"+(j+1)+nombres[i]);
 		baraja = new Baraja(imagenes);
 		reverso = new Rectangle(20, 20, 70,120);
+		mazoB = new MazoSecundario();
 		baraja.barajar();
-		cartasExtraidas = new ArrayList<Carta>();
 	}
 
 	public void paint(Graphics g){
 		noseve.setColor(Color.green);
 		noseve.fillRect(0, 0, 700, 700);
 		noseve.drawImage(imgReverso, 20, 20, Carta.ANCHURA, Carta.ALTURA, this);
-		for (int i = 0; i < cartasExtraidas.size(); i++)
-			cartasExtraidas.get(i).dibujar(noseve, this);
+		mazoB.mostrar(noseve, this);
 		if(activa != null)
 			activa.dibujar(g, this);
 		g.drawImage(imagen, 0, 0, this);
@@ -54,13 +53,11 @@ public class Solitario extends Applet{
 	
 	public boolean mouseDown(Event e, int x, int y){
 		if(reverso.contains(x,y)){
-			cartasExtraidas.add(baraja.sacar());
-			cartasExtraidas.get(cartasExtraidas.size()-1).setPosx(110);
-			cartasExtraidas.get(cartasExtraidas.size()-1).setPosy(20);
+			mazoB.anadir(baraja.sacar());
+			mazoB.recolocar();		
 		}
-		if(cartasExtraidas.get(cartasExtraidas.size()-1).contains(x,y)){
-			activa = cartasExtraidas.get(cartasExtraidas.size()-1);
-			//cartasExtraidas.remove(cartasExtraidas.size()-1);
+		if(mazoB.extraer().contains(x,y)){
+			activa = mazoB.extraer();
 		}
 		repaint();
 		return true;
@@ -77,11 +74,9 @@ public class Solitario extends Applet{
 	
 	public boolean mouseUp(Event e, int x, int y){
 		if(activa != null){
-			activa.setPosx(110);
-			activa.setPosy(20);
-			repaint();
-			//cartasExtraidas.add(activa);
+			mazoB.recolocar();
 			activa = null;
+			repaint();
 		}
 		return true;
 	}

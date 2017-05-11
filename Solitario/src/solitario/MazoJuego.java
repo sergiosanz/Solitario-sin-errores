@@ -3,31 +3,28 @@ package solitario;
 import java.awt.*;
 import java.applet.*;
 
-public class MazoPalo extends Rectangle {
+public class MazoJuego extends Rectangle {
 	java.util.List<Carta> mazo;
-	public static final int POSICIONY = 20;
-	int palo;
+	public static final int POSICIONY = 200;
 
-	public MazoPalo(int px) {
+	public MazoJuego(int px) {
 		super(px, POSICIONY, Carta.ANCHURA, Carta.ALTURA);
 		mazo = new java.util.ArrayList();
 	}
 
 	public boolean anadir(Carta c) {
 		if (mazo.size() == 0) {
-			if (c.getValor() == 1) {
-				mazo.add(c);
-				recolocar();
-				palo = c.getPalo();
-				return true;
-			}
+			recolocar(c);
+			mazo.add(c);
+			return true;
 		} else {
-			if (palo == c.getPalo())
-				if (mazo.get(mazo.size() - 1).getValor() == c.getValor() - 1) {
+			if (c.getColor() != mazo.get(mazo.size() - 1).getColor()) {
+				if (c.getValor() + 1 == mazo.get(mazo.size() - 1).getValor()) {
+					recolocar(c);
 					mazo.add(c);
-					recolocar();
 					return true;
 				}
+			}
 		}
 
 		return false;
@@ -41,9 +38,12 @@ public class MazoPalo extends Rectangle {
 		mazo.remove(mazo.size() - 1);
 	}
 
-	public void recolocar() {
-		mazo.get(mazo.size() - 1).setPosx(x);
-		mazo.get(mazo.size() - 1).setPosy(y);
+	public void recolocar(Carta c) {
+		if (mazo.size() == 0)
+			c.setPosy(y);
+		else
+			c.setPosy(y + (mazo.size() * 30));
+		c.setPosx(x);
 	}
 
 	public void mostrar(Graphics gg, Applet a) {
